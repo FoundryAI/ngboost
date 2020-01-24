@@ -1,14 +1,18 @@
+from ngboost.distns import Distn
+
 import scipy as sp
 import numpy as np
+import jax.numpy as jnp
 from scipy.stats import norm as dist
 
 
-class Normal(object):
+class Normal(Distn):
 
     n_params = 2
     problem_type = "regression"
 
     def __init__(self, params):
+        self.params_ = params
         self.loc = params[0]
         self.scale = np.exp(params[1])
         self.var = self.scale ** 2
@@ -19,19 +23,17 @@ class Normal(object):
             return getattr(self.dist, name)
         return None
 
-    @property
-    def params(self):
-        return {'loc':self.loc, 'scale':self.scale}
-
-    def __getitem__(self, key):
-        return Normal(np.stack([self.loc[key], np.log(self.scale[key])]))
-
-    def __len__(self):
-        return len(self.loc)
-
     def fit(Y):
         m, s = sp.stats.norm.fit(Y)
         return np.array([m, np.log(s)])
+
+    def sample(self, n):
+        return np.stack([self.rvs() for i in range(n)]).T
+
+    def nll_jax(params, Y): # rename this "log_scoring" or something
+        loc, log_scale = params
+        var = jnp.exp(log_scale)**2
+        return jnp.log(var)/2 + ((Y-loc)**2)/(2*var) # + np.log(2*np.pi)/2
 
     # log score methods
     def nll(self, Y):
