@@ -1,6 +1,5 @@
 FROM python:3.7
 WORKDIR /src
 COPY . .
-RUN pip3 install .
-RUN pip3 install pytest pylint
+RUN pip3 install -r requirements.txt
 ENTRYPOINT ["python3"]
