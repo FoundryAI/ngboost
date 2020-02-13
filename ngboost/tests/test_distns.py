@@ -1,6 +1,6 @@
 import pytest
 
-from ngboost.distns import Normal, LogNormal, Exponential, Bernoulli, k_categorical
+from ngboost.distns import Normal, NegativeBinomial, LogNormal, Exponential, Bernoulli, k_categorical
 from ngboost.scores import LogScore, CRPScore
 from sklearn.tree import DecisionTreeRegressor
 
@@ -26,6 +26,7 @@ class TestRegDistns():
 		# try importing these in the class but outside the fn
 		return {
 			Normal: [LogScore, CRPScore], 
+			# NegativeBinomial: [LogScore],
 			LogNormal: [LogScore, CRPScore], 
 			Exponential: [LogScore, CRPScore]
 			}
